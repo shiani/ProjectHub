@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Project, ProjectRecycle, Task, TaskRecycle
+from .models import Project, ProjectRecycle, Task, TaskRecycle, AssignTask, AssignTaskRecycle
 from django.utils.translation import gettext_lazy as _
 
 
@@ -9,6 +9,10 @@ class TaskTabularAdmin(admin.TabularInline):
     model = Task
     fields = ("title", "description",)
 
+
+class AssignTaskTabularAdmin(admin.TabularInline):
+    model = AssignTask
+    fields = ("task", "user",)
 
 
 @admin.register(Project)
@@ -35,7 +39,7 @@ class ProjectRecycleAdmin(admin.ModelAdmin):
         return ProjectRecycle.deleted.filter(is_deleted=True)
 
 
-    @admin.action(description="Recover Projects")
+    @admin.action(description="Recover selected projects")
     def recover(self, request, queryset):
         queryset.update(is_deleted=False, deleted_at=None)
 
@@ -57,6 +61,8 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ("title", 'project')
     search_fields = ("title", "description", 'project')
     ordering = ("id",)
+    inlines = (AssignTaskTabularAdmin,)
+
 
 
 @admin.register(TaskRecycle)
@@ -68,6 +74,43 @@ class TaskRecycleAdmin(admin.ModelAdmin):
         return TaskRecycle.deleted.filter(is_deleted=True)
 
 
-    @admin.action(description="Recover Projects")
+    @admin.action(description="Recover selected tasks")
     def recover(self, request, queryset):
         queryset.update(is_deleted=False, deleted_at=None)
+
+
+
+@admin.register(AssignTask)
+class AssignTaskAdmin(admin.ModelAdmin):
+    
+    fieldsets = (
+        (None, {"fields": ("task", 'user', )}),
+    )
+
+    list_display = ("task", "user", )
+    search_fields = ("task", "user", )
+    ordering = ("id",)
+
+
+
+
+@admin.register(AssignTaskRecycle)
+class AssignTaskRecycleAdmin(admin.ModelAdmin):
+    
+    actions = ['recover']
+    
+    def get_queryset(self, queryset):
+        return AssignTaskRecycle.deleted.filter(is_deleted=True)
+
+
+    @admin.action(description="Recover selected assined tasks")
+    def recover(self, request, queryset):
+        queryset.update(is_deleted=False, deleted_at=None)
+
+    fieldsets = (
+        (None, {"fields": ("task", 'user',)}),
+    )
+
+    list_display = ("task", "user", )
+    search_fields = ("task", "user", )
+    ordering = ("id",)

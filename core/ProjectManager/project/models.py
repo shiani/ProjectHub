@@ -21,7 +21,7 @@ class ProjectRecycle(Project):
         proxy = True
 
     def __str__(self) -> str:
-        return self.title
+        return super().title
 
 
 class Task(BaseModel):
@@ -42,7 +42,27 @@ class TaskRecycle(Task):
         proxy = True
 
     def __str__(self) -> str:
-        return self.title
+        return super().title
 
 
+
+
+class AssignTask(BaseModel):
+    user = models.ForeignKey(to= User, on_delete=models.CASCADE, related_name="assined_tasks")
+    task = models.ForeignKey(to= Task, on_delete=models.CASCADE, related_name="assined_users")
+
+
+    def __str__(self) -> str:
+        return self.task.title
+
+
+class AssignTaskRecycle(AssignTask):
+
+    deleted = Manager()
+
+    class Meta:
+        proxy = True
+
+    def __str__(self) -> str:
+        return super().task.title
 
