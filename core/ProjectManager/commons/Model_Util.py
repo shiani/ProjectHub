@@ -17,7 +17,8 @@ class BaseModelManager(models.Manager):
     def get_queryset(self):
         return BaseModelQuerySet(self.model, self._db).filter(is_deleted=False)
 
-class BaseModel(models.Model):
+
+class BaseModel(models.Model): 
     class Meta:
         abstract = True
 
