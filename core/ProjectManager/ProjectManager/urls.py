@@ -69,7 +69,9 @@ if settings.SHOW_SWAGGER:
 
 # list your api urls here
 api_urlpatterns += [
-    path("user/", include('user.urls', namespace='user'))
+    path("user/", include('user.urls', namespace='user')),
+    path("project/", include('project.urls', namespace='project')),
+
 ]
 urlpatterns += [path('api/', include(api_urlpatterns))]
     

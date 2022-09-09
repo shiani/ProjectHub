@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = [
     # admin template app
     'jazzmin',
@@ -54,7 +53,8 @@ INSTALLED_APPS = [
     "corsheaders",
 
     # our apps
-    "user"
+    "user",
+    "project",
 
 ]
 
