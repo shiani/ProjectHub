@@ -34,6 +34,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # admin template app
+    'jazzmin',
+
     # default apps
     'django.contrib.admin',
     'django.contrib.auth',
