@@ -1,4 +1,3 @@
-from re import T
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -44,6 +43,11 @@ class CustomUserManager(UserManager):
 class User(AbstractUser):
     username_validator = UnicodeUsernameValidator()
 
+    POSITIONS = (
+        ('developer', 'developer'),
+        ('project manager', 'project manager')
+    )
+
     username = models.CharField(
         _("username"),
         max_length=150,
@@ -57,6 +61,7 @@ class User(AbstractUser):
     email = models.EmailField(_("email address"), unique=True, db_index=True)
     first_name = models.CharField(null=True, blank=True, max_length=128)
     last_name = models.CharField(null=True, blank=True, max_length=128)
+    position = models.CharField(max_length=128, choices=POSITIONS, default='developer')
 
 
     objects = CustomUserManager()

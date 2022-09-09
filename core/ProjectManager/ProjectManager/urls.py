@@ -24,11 +24,11 @@ from rest_framework import permissions
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="APP API",
+        title="Project Managing",
         default_version="v1",
         description="Brief descriptions about the api",
         terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="bigdeli.ali3@gmail.com"),
+        contact=openapi.Contact(email="me@hamedshiani.ir"),
         license=openapi.License(name="MIT License"),
     ),
     public=True,

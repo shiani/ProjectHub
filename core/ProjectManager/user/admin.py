@@ -29,6 +29,14 @@ class CustomUserAdmin(UserAdmin):
                 ),
             },
         ),
+        (
+            _("Position"),
+            {
+                "fields": (
+                    "position",
+                ),
+            },
+        ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     add_fieldsets = (
@@ -41,7 +49,7 @@ class CustomUserAdmin(UserAdmin):
         ),
     )
 
-    list_display = ("email", "first_name", "last_name", "is_staff")
+    list_display = ("email", "first_name", "last_name", "position", "is_staff")
     search_fields = ("first_name", "last_name", "email")
     ordering = ("id",)
 
