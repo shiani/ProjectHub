@@ -15,11 +15,11 @@ class TaskTabularAdmin(admin.TabularInline):
 class ProjectAdmin(admin.ModelAdmin):
     
     fieldsets = (
-        (None, {"fields": ("title", 'description',)}),
+        (None, {"fields": ("title", 'description', 'owner', )}),
     )
 
-    list_display = ("title", "description", )
-    search_fields = ("title", "description", )
+    list_display = ("title", "description", 'owner', )
+    search_fields = ("title", "description", 'owner', )
     ordering = ("id",)
     inlines = (TaskTabularAdmin,)
 

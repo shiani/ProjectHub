@@ -1,12 +1,12 @@
 from django.db import models
 from django.db.models import Manager
 from commons.ModelUtil import BaseModel
-# Create your models here.
-
+from user.models import User
 
 class Project(BaseModel):
     title = models.CharField(max_length=512)
     description = models.TextField(blank=True, null=True)
+    owner = models.ForeignKey(to= User, on_delete=models.PROTECT, related_name="projects")
 
 
     def __str__(self) -> str:
