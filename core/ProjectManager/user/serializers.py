@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import User
 
 class UserSignUpSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
         fields = [
@@ -14,6 +16,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = super().create(validated_data)
         user.set_password(validated_data["password"])
+        user.username = user.email
         user.save()
         return user
 

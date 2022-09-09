@@ -28,9 +28,3 @@ class BaseModel(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Deleted at"))
 
     objects = BaseModelManager
-
-    def delete(self):
-        self.is_deleted = True
-        self.deleted_at = timezone.now()
-        self.save()
-
