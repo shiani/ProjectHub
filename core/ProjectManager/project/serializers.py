@@ -5,7 +5,7 @@ class ProjejctSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Project
-        fields = '__all__'
+        fields = ['id', 'title', 'description']
 
 class AddProjectSerializer(serializers.ModelSerializer):
 
