@@ -27,6 +27,7 @@ class ProjectRecycle(Project):
 class Task(BaseModel):
     title = models.CharField(max_length=512)
     description = models.TextField(blank=True, null=True)
+    project = models.ForeignKey(to= Project, on_delete=models.CASCADE, related_name="tasks")
 
 
     def __str__(self) -> str:
@@ -42,4 +43,6 @@ class TaskRecycle(Task):
 
     def __str__(self) -> str:
         return self.title
+
+
 

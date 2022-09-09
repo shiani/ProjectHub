@@ -1,10 +1,29 @@
 from django.contrib import admin
 from .models import Project, ProjectRecycle, Task, TaskRecycle
+from django.utils.translation import gettext_lazy as _
+
+
+
+
+class TaskTabularAdmin(admin.TabularInline):
+    model = Task
+    fields = ("title", "description",)
+
 
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    pass
+    
+    fieldsets = (
+        (None, {"fields": ("title", 'description',)}),
+    )
+
+    list_display = ("title", "description", )
+    search_fields = ("title", "description", )
+    ordering = ("id",)
+    inlines = (TaskTabularAdmin,)
+
+
 
 
 @admin.register(ProjectRecycle)
@@ -20,10 +39,24 @@ class ProjectRecycleAdmin(admin.ModelAdmin):
     def recover(self, request, queryset):
         queryset.update(is_deleted=False, deleted_at=None)
 
+    fieldsets = (
+        (None, {"fields": ("title", 'description',)}),
+    )
+
+    list_display = ("title", "description", )
+    search_fields = ("title", "description", )
+    ordering = ("id",)
+
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    pass
+    fieldsets = (
+        (None, {"fields": ("title", 'description', 'project')}),
+    )
+
+    list_display = ("title", 'project')
+    search_fields = ("title", "description", 'project')
+    ordering = ("id",)
 
 
 @admin.register(TaskRecycle)
