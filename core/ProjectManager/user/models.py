@@ -1,9 +1,8 @@
+from re import T
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
-
-
 
 
 # Create your models here.
@@ -56,6 +55,9 @@ class User(AbstractUser):
         validators=[username_validator],
     )
     email = models.EmailField(_("email address"), unique=True, db_index=True)
+    first_name = models.CharField(null=True, blank=True, max_length=128)
+    last_name = models.CharField(null=True, blank=True, max_length=128)
+
 
     objects = CustomUserManager()
 

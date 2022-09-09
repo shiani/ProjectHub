@@ -231,4 +231,4 @@ if SHOW_DEBUGGER_TOOLBAR:
 
 
 AUTH_USER_MODEL = "user.User"
-
+SITE_ID = 1
