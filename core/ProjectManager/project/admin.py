@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Project, ProjectRecycle
+from .models import Project, ProjectRecycle, Task, TaskRecycle
 
 
 @admin.register(Project)
@@ -14,6 +14,25 @@ class ProjectRecycleAdmin(admin.ModelAdmin):
     
     def get_queryset(self, queryset):
         return ProjectRecycle.deleted.filter(is_deleted=True)
+
+
+    @admin.action(description="Recover Projects")
+    def recover(self, request, queryset):
+        queryset.update(is_deleted=False, deleted_at=None)
+
+
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(TaskRecycle)
+class TaskRecycleAdmin(admin.ModelAdmin):
+    
+    actions = ['recover']
+    
+    def get_queryset(self, queryset):
+        return TaskRecycle.deleted.filter(is_deleted=True)
 
 
     @admin.action(description="Recover Projects")
