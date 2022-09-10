@@ -1,6 +1,3 @@
-from genericpath import exists
-from turtle import title
-
 from user.serializers import UserSerialzier
 from .serializers import AssignTaskSerializer, ProjectSerializer, TaskSerializer, AddProjectSerializer, ProjectListOfTasksSerializer
 from .permissions import ProjectManagerPermission
@@ -34,7 +31,7 @@ class RetrieveProject(generics.RetrieveAPIView):
 
     def get_object(self):
         try:
-            return Project.objects.get(id=self.kwargs.get('id'), owner=self.request.user)
+            return Project.objects.get(id=self.kwargs.get('project_id'), owner=self.request.user)
         except Project.DoesNotExist:
             raise Http404("Project not found")
 
@@ -152,8 +149,21 @@ class ListOfUsersInProject(generics.RetrieveAPIView): # project manager
                     serializer['users'].append(user_data)
         return Response(serializer, status=status.HTTP_201_CREATED)
 
-class ListOfDeveloperTask(generics.ListAPIView): # developer
-    pass
+class ListOfDeveloperTask(generics.RetrieveAPIView): # developer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        assiend_tasks = AssignTask.objects.filter(user=self.request.user)
+        data = {
+            'username': request.user.email,
+            'tasks': []
+        }
+        for assiend_task in assiend_tasks:
+            tasks = Task.objects.filter(id=assiend_task.task.id)
+            for task in tasks:
+                data['tasks'].append(TaskSerializer(instance=task).data)
+        
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class ListOfAllProjects(generics.ListAPIView): # project manager
