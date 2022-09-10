@@ -167,4 +167,8 @@ class ListOfDeveloperTask(generics.RetrieveAPIView): # developer
 
 
 class ListOfAllProjects(generics.ListAPIView): # project manager
-    pass
+    permission_classes = (ProjectManagerPermission, permissions.IsAuthenticated)
+    serializer_class = ProjectSerializer
+
+    def get_queryset(self):
+        return Project.objects.all()
