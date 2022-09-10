@@ -28,7 +28,11 @@ SECRET_KEY = config("SECRET_KEY", default="test")
 DEBUG = config("DEBUG", cast=bool, default=True)
 SHOW_DEBUGGER_TOOLBAR = config("SHOW_DEBUGGER_TOOLBAR", cast=bool, default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    cast=lambda v: [s.strip() for s in v.split(",")],
+    default="*",
+)
 
 
 # Application definition
