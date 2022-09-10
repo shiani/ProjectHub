@@ -8,3 +8,7 @@ class AddProjectPermission(BasePermission):
             return request.user.position == "project manager"
         else:
             return False
+
+class AddTaskPermission(BasePermission):
+        def has_permission(self, request, view):
+            return request.user.is_authenticated

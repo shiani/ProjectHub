@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Project, Task, AssignTask
+from user.serializers import UserSignUpSerializer
 
 class ProjejctSerializer(serializers.ModelSerializer):
 
@@ -30,8 +31,11 @@ class TaskSerializer(serializers.ModelSerializer):
         model=Task
         fields = '__all__'
 
-class AssignProjejctSerializer(serializers.ModelSerializer):
+class AssignTaskSerializer(serializers.ModelSerializer):
+    # task = TaskSerializer()
+    # user = UserSignUpSerializer()
 
     class Meta:
         model=AssignTask
-        fields = '__all__'
+        fields = ['task', 'user']
+

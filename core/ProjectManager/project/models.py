@@ -48,8 +48,8 @@ class TaskRecycle(Task):
 
 
 class AssignTask(BaseModel):
-    user = models.ForeignKey(to= User, on_delete=models.CASCADE, related_name="assined_tasks")
-    task = models.ForeignKey(to= Task, on_delete=models.CASCADE, related_name="assined_users")
+    user = models.ForeignKey(to= User, on_delete=models.CASCADE, related_name="assined_task")
+    task = models.ForeignKey(to= Task, on_delete=models.CASCADE, related_name="assined_task")
 
 
     def __str__(self) -> str:
