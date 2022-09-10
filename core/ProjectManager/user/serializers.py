@@ -28,3 +28,12 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         except KeyError:
             pass
         return user
+
+class UserSerialzier(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'email',
+            'first_name',
+            'last_name'
+        ]

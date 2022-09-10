@@ -2,7 +2,7 @@ from rest_framework.permissions import BasePermission
 from rest_framework import permissions
 
 
-class AddProjectPermission(BasePermission):
+class ProjectManagerPermission(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             return request.user.position == "project manager"

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AddProject, RetrieveProject, AddTask, AssignTaskView
+from .views import AddProject, RetrieveProject, AddTask, AssignTaskView, ListOfTaskInProject, ListOfUsersInProject
 app_name = 'project-api'
 
 urlpatterns = [
@@ -7,5 +7,8 @@ urlpatterns = [
     path('retrieve_project/<id>/', RetrieveProject.as_view(), name='retrieve-project'),
     path('add_task/', AddTask.as_view(), name='add-task'),
     path('assign_task/', AssignTaskView.as_view(), name='assign-task'),
+    path('project_tasks/<project_id>/', ListOfTaskInProject.as_view(), name='project-tasks'),
+    path('project_users/<project_id>/', ListOfUsersInProject.as_view(), name='project-users'),
+
 
 ]

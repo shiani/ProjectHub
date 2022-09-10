@@ -1,6 +1,9 @@
 from genericpath import exists
-from .serializers import AssignTaskSerializer, ProjejctSerializer, TaskSerializer, AddProjectSerializer
-from .permissions import AddProjectPermission
+from turtle import title
+
+from user.serializers import UserSerialzier
+from .serializers import AssignTaskSerializer, ProjectSerializer, TaskSerializer, AddProjectSerializer, ProjectListOfTasksSerializer
+from .permissions import ProjectManagerPermission
 from django.db.transaction import atomic
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
@@ -11,7 +14,7 @@ from user.models import User
 
 class AddProject(generics.CreateAPIView):
     serializer_class = AddProjectSerializer
-    permission_classes = (AddProjectPermission, permissions.IsAuthenticated,)
+    permission_classes = (ProjectManagerPermission, permissions.IsAuthenticated,)
 
     @atomic
     def post(self, request, *args, **kwargs):
@@ -26,8 +29,8 @@ class AddProject(generics.CreateAPIView):
 
 
 class RetrieveProject(generics.RetrieveAPIView):
-    serializer_class = ProjejctSerializer
-    permission_classes = (AddProjectPermission, permissions.IsAuthenticated)
+    serializer_class = ProjectSerializer
+    permission_classes = (ProjectManagerPermission, permissions.IsAuthenticated)
 
     def get_object(self):
         try:
@@ -103,9 +106,51 @@ class AssignTaskView(generics.CreateAPIView): # developer and project manager
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class ListOfTaskInProject(generics.ListAPIView): # developer and project manager
-    pass
+class ListOfTaskInProject(generics.RetrieveAPIView): # developer and project manager
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ProjectListOfTasksSerializer
 
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            return Response({'message': "project not found"}, status=status.HTTP_400_BAD_REQUEST)
+        tasks = Task.objects.filter(project=project)
+        serializer = ProjectListOfTasksSerializer(instance=project).data
+        serializer["tasks"] = []
+        for task in tasks:
+            t = TaskSerializer(instance=task).data
+            t['users'] = []
+            assigned_tasks = AssignTask.objects.filter(task=task)
+            for assigned_task in assigned_tasks:
+                t['users'].append(UserSerialzier(instance=assigned_task.user).data) 
+            serializer["tasks"].append(t)
+
+        return Response(serializer, status=status.HTTP_201_CREATED)
+
+
+class ListOfUsersInProject(generics.RetrieveAPIView): # project manager
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ProjectListOfTasksSerializer
+
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            return Response({'message': "project not found"}, status=status.HTTP_400_BAD_REQUEST)
+        tasks = Task.objects.filter(project=project)
+
+        serializer = ProjectSerializer(instance=project).data
+        serializer["users"] = []
+        for task in tasks:
+            assigned_tasks = AssignTask.objects.filter(task=task)
+            for assigned_task in assigned_tasks:
+                user_data = UserSerialzier(instance=assigned_task.user).data
+                if not user_data in serializer['users']:
+                    serializer['users'].append(user_data)
+        return Response(serializer, status=status.HTTP_201_CREATED)
 
 class ListOfDeveloperTask(generics.ListAPIView): # developer
     pass

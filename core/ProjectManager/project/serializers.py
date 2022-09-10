@@ -1,8 +1,9 @@
+from dataclasses import fields
 from rest_framework import serializers
 from .models import Project, Task, AssignTask
-from user.serializers import UserSignUpSerializer
+from user.serializers import UserSerialzier
 
-class ProjejctSerializer(serializers.ModelSerializer):
+class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Project
@@ -29,7 +30,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Task
-        fields = '__all__'
+        fields = ['id', 'title', 'description']
 
 class AssignTaskSerializer(serializers.ModelSerializer):
     # task = TaskSerializer()
@@ -39,3 +40,9 @@ class AssignTaskSerializer(serializers.ModelSerializer):
         model=AssignTask
         fields = ['task', 'user']
 
+class ProjectListOfTasksSerializer(serializers.ModelSerializer):
+    tasks = TaskSerializer(many=True)
+
+    class Meta:
+        model = Project
+        fields = ['id', 'title', 'description', 'tasks']
