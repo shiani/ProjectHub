@@ -1,5 +1,6 @@
 from user.serializers import UserSerialzier
-from .serializers import AssignTaskSerializer, ProjectSerializer, TaskSerializer, AddProjectSerializer, ProjectListOfTasksSerializer
+from .serializers import AssignTaskSerializer, ProjectSerializer, TaskSerializer, AddProjectSerializer, \
+    ProjectListOfTasksSerializer
 from .permissions import ProjectManagerPermission
 from django.db.transaction import atomic
 from rest_framework import generics, status, permissions
@@ -16,7 +17,7 @@ class AddProject(generics.CreateAPIView):
     @atomic
     def post(self, request, *args, **kwargs):
         """Creates new Project"""
-        context = {'request': request} 
+        context = {'request': request}
 
         serializer = self.serializer_class(data=request.data, context=context)
         serializer.is_valid(raise_exception=True)
@@ -35,6 +36,7 @@ class RetrieveProject(generics.RetrieveAPIView):
         except Project.DoesNotExist:
             raise Http404("Project not found")
 
+
 class AddTask(generics.CreateAPIView):
     serializer_class = TaskSerializer
     permission_classes = (permissions.IsAuthenticated,)
@@ -42,16 +44,20 @@ class AddTask(generics.CreateAPIView):
     @atomic
     def post(self, request, *args, **kwargs):
         """Creates new Task"""
-        context = {'request': request} 
-        serializer = self.serializer_class(data=request.data, context=context)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
+        title = request.data.get('title')
+        description = request.data.get('description', None)
+        project_id = request.data.get('project_id')
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            return Response({'message': "project not found"}, status=status.HTTP_400_BAD_REQUEST)
+        task = Task.objects.create(title=title, description=description, project=project)
+        serializer = TaskSerializer(instance=task)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class AssignTaskView(generics.CreateAPIView): # developer and project manager
+class AssignTaskView(generics.CreateAPIView):  # developer and project manager
     serializer_class = AssignTaskSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -69,7 +75,8 @@ class AssignTaskView(generics.CreateAPIView): # developer and project manager
             try:
                 user = User.objects.get(id=user_id)
                 if user.position != 'developer':
-                    return Response({'message': "user position must be a developer to assign task"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'message': "user position must be a developer to assign task"},
+                                    status=status.HTTP_400_BAD_REQUEST)
             except User.DoesNotExist:
                 return Response({'message': "user not found"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -83,12 +90,12 @@ class AssignTaskView(generics.CreateAPIView): # developer and project manager
                 assign_task = AssignTask.objects.create(user=user, task=task)
             except Task.DoesNotExist:
                 return Response({'message': "task not found"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # logic for developers
         else:
             # developers only can assign task to themselves
             user = request.user
-            
+
             # finding task and assigning that to requested user
             try:
                 task = Task.objects.get(id=task_id)
@@ -103,7 +110,7 @@ class AssignTaskView(generics.CreateAPIView): # developer and project manager
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class ListOfTaskInProject(generics.RetrieveAPIView): # developer and project manager
+class ListOfTaskInProject(generics.RetrieveAPIView):  # developer and project manager
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ProjectListOfTasksSerializer
 
@@ -121,13 +128,13 @@ class ListOfTaskInProject(generics.RetrieveAPIView): # developer and project man
             t['users'] = []
             assigned_tasks = AssignTask.objects.filter(task=task)
             for assigned_task in assigned_tasks:
-                t['users'].append(UserSerialzier(instance=assigned_task.user).data) 
+                t['users'].append(UserSerialzier(instance=assigned_task.user).data)
             serializer["tasks"].append(t)
 
-        return Response(serializer, status=status.HTTP_201_CREATED)
+        return Response(serializer, status=status.HTTP_200_OK)
 
 
-class ListOfUsersInProject(generics.RetrieveAPIView): # project manager
+class ListOfUsersInProject(generics.RetrieveAPIView):  # project manager
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ProjectListOfTasksSerializer
 
@@ -147,9 +154,10 @@ class ListOfUsersInProject(generics.RetrieveAPIView): # project manager
                 user_data = UserSerialzier(instance=assigned_task.user).data
                 if not user_data in serializer['users']:
                     serializer['users'].append(user_data)
-        return Response(serializer, status=status.HTTP_201_CREATED)
+        return Response(serializer, status=status.HTTP_200_OK)
 
-class ListOfDeveloperTask(generics.RetrieveAPIView): # developer
+
+class ListOfDeveloperTask(generics.RetrieveAPIView):  # developer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
@@ -162,11 +170,11 @@ class ListOfDeveloperTask(generics.RetrieveAPIView): # developer
             tasks = Task.objects.filter(id=assiend_task.task.id)
             for task in tasks:
                 data['tasks'].append(TaskSerializer(instance=task).data)
-        
-        return Response(data, status=status.HTTP_201_CREATED)
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
-class ListOfAllProjects(generics.ListAPIView): # project manager
+class ListOfAllProjects(generics.ListAPIView):  # project manager
     permission_classes = (ProjectManagerPermission, permissions.IsAuthenticated)
     serializer_class = ProjectSerializer
 

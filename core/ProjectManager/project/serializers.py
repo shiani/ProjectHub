@@ -3,16 +3,16 @@ from rest_framework import serializers
 from .models import Project, Task, AssignTask
 from user.serializers import UserSerialzier
 
-class ProjectSerializer(serializers.ModelSerializer):
 
+class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Project
+        model = Project
         fields = ['id', 'title', 'description']
 
-class AddProjectSerializer(serializers.ModelSerializer):
 
+class AddProjectSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Project
+        model = Project
         fields = ['title', 'description']
 
     def save(self, **kwargs):
@@ -27,18 +27,19 @@ class AddProjectSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-
     class Meta:
-        model=Task
-        fields = ['id', 'title', 'description']
+        model = Task
+        fields = ['id', 'title', 'description', 'project_id']
+
 
 class AssignTaskSerializer(serializers.ModelSerializer):
     # task = TaskSerializer()
     # user = UserSignUpSerializer()
 
     class Meta:
-        model=AssignTask
+        model = AssignTask
         fields = ['task', 'user']
+
 
 class ProjectListOfTasksSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer(many=True)
